@@ -1,0 +1,130 @@
+<HTML>
+<BODY>
+<H1>Listener</H1>
+First install <A HREF="http://www.mega-nerd.com/libsndfile/">libsndfile</A>!<BR>
+Then:
+<PRE>
+make install
+</PRE>
+Then run '<B>setlistener</B>'.
+Then, with the left and right arrow keys, move the '|' until the
+word "<silence>" appears. No, don't you move the '|' to the maximum
+right, move it to the right until the "<silence>" just constantly
+appears. Then: remember the value "Current level: ".<BR>
+<BR>
+Next step is creating the file <B>/usr/local/etc/listener.conf</B>
+Copy the example <B>listener.conf</B> to the location mentioned above and
+edit it to suit your needs.<BR>
+For example:
+<PRE>
+wav_path = /home/folkert/recordings
+detect_level = 800
+min_duration = 1
+max_duration = 300
+rec_silence = 5
+audio_parameters = 44.1khz,1,wav,pcm16
+from_pipe = 0
+exec = /home/folkert/encode_sample
+prerecord_n_seconds = 3
+</PRE>
+
+<H2>audio_parameters</H2>
+Format sets what kind of outputfile is generated AND how the sound is recorded.<BR>
+Run listener with -h to get a list of parameters.<BR>
+In any order you can set the samplerate (e.g. 44100 or 22.05khz), the number of channels, the output-file-type, the file subtype (e.g. 16 bit or adpcm compressed).<BR>
+<BR>
+
+<H2>rec_silence</H2>
+When while recording things become silent, don't stop recording immediately
+but keep recording for 'rec_silence' seconds to see if the sound restarts.<BR>
+
+<H2>min_duration</H2>
+When the sound starts, record at least that many seconds of audio, measured
+relative to the start of the recoding.<BR>
+E.g. if the sound only sounds for 3 seconds and you've set this value to 5,
+still at least 5 seconds of audio will be recorded.<BR>
+
+<H2>min_triggers</H2>
+sets how many samples must be above the threshold (the
+'<B>detect_level</B>') before recording starts.
+The samplerate is set to 44.1kHz so if you set min_duration to
+4410, the minimum length (duration) of sound before the recording
+starts is: 0.1s (or: one tenth of a second).<BR>
+
+<H2>max_duration</H2>
+How long a sample may be before a new file is started.<BR>
+
+<H2>one_shot</H2>
+When set to yes/on/1, listener will exit after the first recorded sample.<BR>
+
+<H2>prerecord_n_seconds</H2>
+How many seconds to record <I>before</I> the sound starts.<BR>
+
+<H2>from_pipe</H2>
+sets wether listener is reading from a pipe fed by
+<B>listenersoundpipe</B>. <B>listenersoundpipe</B> lets you split a sound-
+device in two so that you can check 2 rooms with only one sound-
+card. You need to create two pipes and start 2 listener processes,
+each reading from one pipe.<BR>
+Set this parameter to yes/on/1 for "pipe-mode", no/off/0 for normal mode.
+
+<H2>exec</H2>
+selects the script/program to execute after the sample was
+recorded. This first (and only) parameter for that script is the
+filename of the sample.<BR>
+
+<H2>on_event_start</H2>
+selects the script/program to execute before the sample was recorded.<BR>
+
+<H2>output_pipe</H2>
+Instead of writing to a wav-file, listener can also execute an external
+program which does the compression and/or file-I/O.<BR>
+e.g.:
+<PRE>
+output_pipe=bladeenc -rawstereo -rawsigned -rawchannels=2 STDIN /tmp/my_file.mp3
+</PRE>
+
+<H2>filter</H2>
+lets you add one or more filters. these will be used when
+detecting sounds. beware: sound is written to the wav-files BEFORE
+the filtering is done. See the directory '<I>filter_lib_example</I>' for
+an example on how to write a filter for listener.<BR>
+
+<H2>amplify</H2>
+Wether to automatically amplify the sound or not. Use 'on' and 'off' to
+toggle.<BR>
+
+<H2>start_amplify</H2>
+What amplification to use when the sound starts. This will be adjusted
+to something more applicable UNLESS 'fixed_amplify' is set to yes.<BR>
+
+<H2>max_amplify</H2>
+Maximum amplification to use.<BR>
+
+<H2>fixed_amplify</H2>
+Wether to ONLY use the amplification factor set with 'start_amplify'
+(=yes) or let listener do autotuning (=no).<BR>
+
+<B>safe_after_filter</B>sets wether to save the audio-data to disk
+before or after the filtering. Before the filtering gives you the
+original sound while after gives you the sound after processing
+with the filter(s).<BR>
+Enter '<B>on</B>' or '<B>off</B>'.<BR>
+
+<BR>
+The final step is starting the program:
+<PRE>
+listener
+</PRE>
+and that's it!<BR>
+
+<BR>
+Thanks to Hugo <A HREF="mailto:hugo@homebaze.net">Hugo</A> for adding code that enables
+you to set some parameters from the commandline.<BR>
+
+<BR>
+If you have any suggestions or anything else, do not hesitate
+to contact me at the following e-mail address:<BR>
+<A HREF="folkert@vanheusden.com">folkert@vanheusden.com</A><BR>
+</BODY>
+</HTML>

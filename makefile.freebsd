@@ -1,0 +1,37 @@
+VERSION=1.7.1
+
+CFLAGS=-O2 -Wall -DVERSION=\"$(VERSION)\" -I/usr/local/include -L/usr/local/lib
+
+OBJSsl=sl.o snd_dev.o error.o utils.o
+OBJSli=listener.o snd_dev.o error.o utils.o
+
+all: setlistener listener
+
+setlistener: $(OBJSsl)
+	$(CC) -g -Wall -W $(OBJSsl) -lncurses -o setlistener
+	strip setlistener
+
+listener: $(OBJSli)
+	$(CC) -g -Wall -W $(OBJSli) -lsndfile -o listener
+	strip listener
+
+install: setlistener listener
+	cp setlistener /usr/local/bin
+	cp listener /usr/local/bin
+	cp listener.conf /usr/local/etc/
+
+uninstall: clean
+	rm -f /usr/local/bin/setlistener
+	rm -f /usr/local/bin/listener
+	rm -f /usr/local/etc/listener.conf
+
+clean:
+	rm -f $(OBJSsl) $(OBJSli) setlistener listener core
+
+package: clean
+	# source package
+	rm -rf listener-$(VERSION)
+	mkdir listener-$(VERSION)
+	cp *.c *.h *.conf Makefile INSTALL license.txt listener-$(VERSION)
+	tar czf listener-$(VERSION).tgz listener-$(VERSION)
+	rm -rf listener-$(VERSION)
